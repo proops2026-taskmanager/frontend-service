@@ -1,11 +1,29 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
+
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+}
+
+async function fetchUsers(): Promise<User[]> {
+  const res = await api.get<{ users: User[] }>('/users');
+  return res.data.users;
+}
 
 function CreateTaskPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -62,19 +80,29 @@ function CreateTaskPage() {
         </div>
 
         <div>
-          <label htmlFor="assignee_id">Assignee ID *</label>
-          <input
-            id="assignee_id"
-            type="text"
-            value={assigneeId}
-            onChange={(e) => setAssigneeId(e.target.value)}
-            required
-          />
+          <label htmlFor="assignee_id">Assignee *</label>
+          {usersLoading ? (
+            <span>Loading users...</span>
+          ) : (
+            <select
+              id="assignee_id"
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+              required
+            >
+              <option value="">Select a user</option>
+              {users?.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.full_name} ({user.email})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {error && <p role="alert">{error}</p>}
 
-        <button type="submit" disabled={!isValid || loading}>
+        <button type="submit" disabled={!isValid || loading || usersLoading}>
           {loading ? 'Creating…' : 'Create Task'}
         </button>
       </form>
