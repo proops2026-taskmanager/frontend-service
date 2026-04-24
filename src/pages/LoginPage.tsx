@@ -1,6 +1,5 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard } from 'lucide-react';
 import api from '../lib/axios';
 import { setAuth, CurrentUser } from '../lib/auth';
 
@@ -36,75 +35,46 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0079BF] flex flex-col items-center justify-center p-4">
-      {/* Logo */}
-      <div className="flex items-center gap-3 mb-8 text-white">
-        <LayoutDashboard className="w-10 h-10" />
-        <h1 className="text-4xl font-bold tracking-tight">TaskBoard</h1>
-      </div>
-
-      {/* Card */}
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-sm">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          Log in to continue
-        </h2>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
-              Email
-            </label>
+    <div>
+      <header>
+        <h1>Task Manager</h1>
+        <p>Sign in to your account</p>
+      </header>
+      <main>
+        <form onSubmit={handleSubmit}>
+          <h3>Welcome Back</h3>
+          <div>
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               placeholder="you@example.com"
-              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              required
             />
           </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Password
-            </label>
+          <div>
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               placeholder="••••••••"
-              className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              required
             />
           </div>
-
-          {error && (
-            <div
-              role="alert"
-              className="bg-red-50 border border-red-200 text-red-700 text-sm rounded px-3 py-2"
-            >
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-[#0079BF] hover:bg-[#026AA7] disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors mt-1"
-          >
+          {error && <p role="alert">{error}</p>}
+          <button type="submit" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-
-        <p className="text-sm text-center text-gray-500 mt-4">
-          Don't have an account?{' '}
-          <a href="/register" className="text-[#0079BF] hover:underline font-medium">
-            Register
-          </a>
+        
+        <p style={{ textAlign: 'center', marginTop: '20px' }}>
+          Don't have an account? <a href="/register">Create one</a>
         </p>
-      </div>
+      </main>
     </div>
   );
 }

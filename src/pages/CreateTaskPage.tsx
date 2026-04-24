@@ -1,17 +1,33 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Plus } from 'lucide-react';
 import api from '../lib/axios';
+
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+}
+
+async function fetchUsers(): Promise<User[]> {
+  const res = await api.get<{ users: User[] }>('/users');
+  return res.data.users;
+}
 
 function CreateTaskPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState('');
-  const [dueDate, setDueDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,9 +43,9 @@ function CreateTaskPage() {
         title: title.trim(),
         description: description.trim() || undefined,
         assignee_id: assigneeId.trim(),
-        due_date: dueDate || undefined,
       });
 
+      // Invalidate task list cache so TaskListPage re-fetches on redirect
       await queryClient.invalidateQueries({ queryKey: ['tasks'] });
       navigate('/');
     } catch {
@@ -40,105 +56,69 @@ function CreateTaskPage() {
   }
 
   return (
-    <div className="h-full bg-gray-50 overflow-y-auto">
-      <div className="max-w-xl mx-auto px-4 py-8">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 text-sm mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to board
-        </button>
+    <div>
+      <header>
+        <h1>Task Manager</h1>
+        <p>Create a new task</p>
+      </header>
+      <nav>
+        <Link to="/">Tasks</Link>
+        <Link to="/tasks/new" className="active">New Task</Link>
+      </nav>
+      <main>
+        <form onSubmit={handleSubmit}>
+          <h3>New Task Details</h3>
+          <div>
+            <label htmlFor="title">Title *</label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter task title"
+              required
+            />
+          </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h1 className="text-xl font-bold text-gray-900 mb-6">Create New Task</h1>
+          <div>
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the task..."
+              rows={4}
+            />
+          </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="title" className="text-sm font-medium text-gray-700">
-                Title <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+          <div>
+            <label htmlFor="assignee_id">Assignee *</label>
+            {usersLoading ? (
+              <span className="loading">Loading users...</span>
+            ) : (
+              <select
+                id="assignee_id"
+                value={assigneeId}
+                onChange={(e) => setAssigneeId(e.target.value)}
                 required
-                placeholder="What needs to be done?"
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="description" className="text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add more details…"
-                rows={3}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="assignee_id" className="text-sm font-medium text-gray-700">
-                  Assignee ID <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="assignee_id"
-                  type="text"
-                  value={assigneeId}
-                  onChange={(e) => setAssigneeId(e.target.value)}
-                  required
-                  placeholder="User UUID"
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="due_date" className="text-sm font-medium text-gray-700">
-                  Due Date
-                </label>
-                <input
-                  id="due_date"
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div role="alert" className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2">
-                {error}
-              </div>
+              >
+                <option value="">Select a user</option>
+                {users?.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.full_name} ({user.email})
+                  </option>
+                ))}
+              </select>
             )}
+          </div>
 
-            <div className="flex items-center gap-3 pt-1">
-              <button
-                type="submit"
-                disabled={!isValid || loading}
-                className="flex items-center gap-2 bg-[#0079BF] hover:bg-[#026AA7] disabled:opacity-50 text-white font-semibold px-5 py-2 rounded-lg transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                {loading ? 'Creating…' : 'Create Task'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                className="text-gray-500 hover:text-gray-800 text-sm transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+          {error && <p role="alert">{error}</p>}
+
+          <button type="submit" disabled={!isValid || loading || usersLoading}>
+            {loading ? 'Creating…' : 'Create Task'}
+          </button>
+        </form>
+      </main>
     </div>
   );
 }

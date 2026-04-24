@@ -14,7 +14,7 @@ const STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE', 'CANCELLED'];
 
 function TaskFilterBar({ filters, onChange }: Props) {
   return (
-    <div>
+    <div className="filter-bar">
       <select
         value={filters.status}
         onChange={(e) =>
@@ -24,14 +24,14 @@ function TaskFilterBar({ filters, onChange }: Props) {
         <option value="">All statuses</option>
         {STATUSES.map((s) => (
           <option key={s} value={s}>
-            {s}
+            {s === 'TODO' ? 'To Do' : s === 'IN_PROGRESS' ? 'In Progress' : s}
           </option>
         ))}
       </select>
 
       <input
         type="text"
-        placeholder="Assignee ID"
+        placeholder="Filter by assignee..."
         value={filters.assignee_id}
         onChange={(e) => onChange({ ...filters, assignee_id: e.target.value })}
       />

@@ -4,6 +4,7 @@ const USER_KEY = 'current_user';
 export interface CurrentUser {
   id: string;
   email: string;
+  full_name: string;
   role: 'member' | 'lead';
 }
 

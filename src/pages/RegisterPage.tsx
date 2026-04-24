@@ -60,64 +60,73 @@ function RegisterPage() {
 
   return (
     <div>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email *</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+      <header>
+        <h1>Task Manager</h1>
+        <p>Create your account</p>
+      </header>
+      <main>
+        <form onSubmit={handleSubmit}>
+          <h3>Get Started</h3>
+          <div>
+            <label htmlFor="email">Email *</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="password">Password * (min 8 characters)</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-          />
-        </div>
+          <div>
+            <label htmlFor="password">Password * (min 8 characters)</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              minLength={8}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="full_name">Full Name *</label>
-          <input
-            id="full_name"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="full_name">Full Name *</label>
+            <input
+              id="full_name"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="John Doe"
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="role">Role</label>
-          <select
-            id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as 'member' | 'lead')}
-          >
-            <option value="member">Member</option>
-            <option value="lead">Lead</option>
-          </select>
-        </div>
+          <div>
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value as 'member' | 'lead')}
+            >
+              <option value="member">Member</option>
+              <option value="lead">Lead</option>
+            </select>
+          </div>
 
-        {error && <p role="alert">{error}</p>}
+          {error && <p role="alert">{error}</p>}
 
-        <button type="submit" disabled={!isValid || loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-      
-      <p>
-        Already have an account? <a href="/login">Sign in</a>
-      </p>
+          <button type="submit" disabled={!isValid || loading}>
+            {loading ? 'Creating account...' : 'Create Account'}
+          </button>
+        </form>
+        
+        <p style={{ textAlign: 'center', marginTop: '20px' }}>
+          Already have an account? <a href="/login">Sign in</a>
+        </p>
+      </main>
     </div>
   );
 }
