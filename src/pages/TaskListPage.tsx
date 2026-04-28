@@ -17,8 +17,8 @@ async function fetchTasks(filters: Filters): Promise<Task[]> {
   if (filters.status) params.status = filters.status;
   if (filters.assignee_id) params.assignee_id = filters.assignee_id;
 
-  const res = await api.get<Task[]>('/tasks', { params });
-  return res.data;
+  const res = await api.get<{ tasks: Task[]; total: number }>('/tasks', { params });
+  return res.data.tasks ?? [];
 }
 
 function TaskListPage() {
@@ -51,9 +51,9 @@ function TaskListPage() {
       <main>
         {currentUser?.role === 'lead' && (
           <div className="user-info">
-            <div className="avatar">{currentUser.full_name.charAt(0).toUpperCase()}</div>
+            <div className="avatar">{(currentUser.full_name || currentUser.email || '?').charAt(0).toUpperCase()}</div>
             <div className="name">
-              {currentUser.full_name} ({currentUser.role})
+              {currentUser.full_name || currentUser.email} ({currentUser.role})
             </div>
           </div>
         )}

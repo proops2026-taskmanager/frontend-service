@@ -18,11 +18,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// On 401: clear stored auth and redirect to login
+// On 401: only redirect if a token existed (session expired), not on login failures
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && getToken()) {
       clearAuth();
       window.location.href = '/login';
     }
