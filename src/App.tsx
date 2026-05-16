@@ -1,9 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthGuard from './components/AuthGuard';
+import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import TaskListPage from './pages/TaskListPage';
 import CreateTaskPage from './pages/CreateTaskPage';
 import TaskDetailPage from './pages/TaskDetailPage';
+
+function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="h-full flex flex-col">
+      <Navbar />
+      <main className="flex-1 overflow-hidden">{children}</main>
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -11,12 +21,13 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Protected routes — AuthGuard redirects to /login if no token */}
         <Route
           path="/"
           element={
             <AuthGuard>
-              <TaskListPage />
+              <ProtectedLayout>
+                <TaskListPage />
+              </ProtectedLayout>
             </AuthGuard>
           }
         />
@@ -24,7 +35,9 @@ function App() {
           path="/tasks/new"
           element={
             <AuthGuard>
-              <CreateTaskPage />
+              <ProtectedLayout>
+                <CreateTaskPage />
+              </ProtectedLayout>
             </AuthGuard>
           }
         />
@@ -32,7 +45,9 @@ function App() {
           path="/tasks/:id"
           element={
             <AuthGuard>
-              <TaskDetailPage />
+              <ProtectedLayout>
+                <TaskDetailPage />
+              </ProtectedLayout>
             </AuthGuard>
           }
         />
