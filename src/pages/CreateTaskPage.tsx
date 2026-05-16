@@ -1,14 +1,32 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Plus } from 'lucide-react';
 import api from '../lib/axios';
 import { getCurrentUser } from '../lib/auth';
 
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+}
+
+async function fetchUsers(): Promise<User[]> {
+  const res = await api.get<{ users: User[] }>('/users');
+  return res.data.users;
+}
+
 function CreateTaskPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const currentUser = getCurrentUser();
+
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -94,15 +112,24 @@ function CreateTaskPage() {
                 <label htmlFor="assignee_id" className="text-sm font-medium text-gray-700">
                   Assignee <span className="text-red-500">*</span>
                 </label>
-                <input
-                  id="assignee_id"
-                  type="text"
-                  value={assigneeId}
-                  onChange={(e) => setAssigneeId(e.target.value)}
-                  required
-                  placeholder="user@email.com"
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
+                {usersLoading ? (
+                  <span className="text-sm text-gray-500">Loading users...</span>
+                ) : (
+                  <select
+                    id="assignee_id"
+                    value={assigneeId}
+                    onChange={(e) => setAssigneeId(e.target.value)}
+                    required
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  >
+                    <option value="">Select a user</option>
+                    {users?.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.full_name} ({user.email})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -128,7 +155,7 @@ function CreateTaskPage() {
             <div className="flex items-center gap-3 pt-1">
               <button
                 type="submit"
-                disabled={!isValid || loading}
+                disabled={!isValid || loading || usersLoading}
                 className="flex items-center gap-2 bg-[#0079BF] hover:bg-[#026AA7] disabled:opacity-50 text-white font-semibold px-5 py-2 rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
