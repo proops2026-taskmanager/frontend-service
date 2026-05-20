@@ -94,7 +94,7 @@ function LoginPage() {
             disabled={loading}
             className="bg-[#0079BF] hover:bg-[#026AA7] disabled:opacity-60 text-white font-semibold py-2 rounded transition-colors mt-1"
           >
-            {loading ? 'Logging in…' : 'Log in'}
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
