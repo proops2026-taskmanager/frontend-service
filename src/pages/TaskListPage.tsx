@@ -258,8 +258,15 @@ function TaskListPage() {
         </div>
       )}
 
+      {/* Empty state */}
+      {!isLoading && !isError && tasks?.length === 0 && (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-white/80 text-sm">No tasks yet</p>
+        </div>
+      )}
+
       {/* Kanban columns */}
-      {!isLoading && !isError && (
+      {!isLoading && !isError && tasks && tasks.length > 0 && (
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
           <div className="flex-1 overflow-x-auto overflow-y-hidden">
             <div className="flex gap-3 px-4 py-4 h-full items-start min-w-max">
