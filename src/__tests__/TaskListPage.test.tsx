@@ -52,7 +52,7 @@ const mockTasks = [
 
 describe('TaskListPage', () => {
   it('renders one TaskCard per task returned by the API', async () => {
-    mockGet.mockResolvedValueOnce({ data: mockTasks });
+    mockGet.mockResolvedValueOnce({ data: { tasks: mockTasks, total: 2 } });
 
     renderWithProviders(<TaskListPage />);
 
@@ -63,7 +63,7 @@ describe('TaskListPage', () => {
   });
 
   it('shows empty state when API returns no tasks', async () => {
-    mockGet.mockResolvedValueOnce({ data: [] });
+    mockGet.mockResolvedValueOnce({ data: { tasks: [], total: 0 } });
 
     renderWithProviders(<TaskListPage />);
 

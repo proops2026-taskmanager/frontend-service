@@ -5,6 +5,7 @@ import CreateTaskPage from '../pages/CreateTaskPage';
 
 vi.mock('../lib/axios', () => ({
   default: {
+    get: vi.fn(),
     post: vi.fn(),
     interceptors: {
       request: { use: vi.fn() },
@@ -21,9 +22,13 @@ vi.mock('react-router-dom', async (importOriginal) => {
 
 import api from '../lib/axios';
 const mockPost = api.post as ReturnType<typeof vi.fn>;
+const mockGet = api.get as ReturnType<typeof vi.fn>;
+
+const mockUsers = [{ id: 'uuid-1', email: 'a@b.com', full_name: 'Alice', role: 'member' }];
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGet.mockResolvedValue({ data: { users: mockUsers } });
 });
 
 describe('CreateTaskPage', () => {
@@ -33,8 +38,10 @@ describe('CreateTaskPage', () => {
     expect(screen.getByRole('button', { name: /create task/i })).toBeDisabled();
   });
 
-  it('submit button is disabled when only title is filled', () => {
+  it('submit button is disabled when only title is filled', async () => {
     renderWithProviders(<CreateTaskPage />);
+
+    await waitFor(() => expect(screen.getByLabelText(/assignee/i)).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Fix bug' },
@@ -43,13 +50,15 @@ describe('CreateTaskPage', () => {
     expect(screen.getByRole('button', { name: /create task/i })).toBeDisabled();
   });
 
-  it('submit button is enabled when title and assignee_id are filled', () => {
+  it('submit button is enabled when title and assignee_id are filled', async () => {
     renderWithProviders(<CreateTaskPage />);
+
+    await waitFor(() => expect(screen.getByLabelText(/assignee/i)).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Fix bug' },
     });
-    fireEvent.change(screen.getByLabelText(/assignee id/i), {
+    fireEvent.change(screen.getByLabelText(/assignee/i), {
       target: { value: 'uuid-1' },
     });
 
@@ -61,10 +70,12 @@ describe('CreateTaskPage', () => {
 
     renderWithProviders(<CreateTaskPage />);
 
+    await waitFor(() => expect(screen.getByLabelText(/assignee/i)).toBeInTheDocument());
+
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Fix bug' },
     });
-    fireEvent.change(screen.getByLabelText(/assignee id/i), {
+    fireEvent.change(screen.getByLabelText(/assignee/i), {
       target: { value: 'uuid-1' },
     });
     fireEvent.click(screen.getByRole('button', { name: /create task/i }));
