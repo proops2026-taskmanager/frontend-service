@@ -28,6 +28,8 @@ function CreateTaskPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
+  const [dueDate, setDueDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +45,8 @@ function CreateTaskPage() {
         title: title.trim(),
         description: description.trim() || undefined,
         assignee_id: assigneeId.trim(),
+        priority,
+        due_date: dueDate || undefined,
       });
 
       // Invalidate task list cache so TaskListPage re-fetches on redirect
@@ -110,6 +114,26 @@ function CreateTaskPage() {
                 ))}
               </select>
             )}
+          </div>
+
+          <div>
+            <label htmlFor="priority">Priority</label>
+            <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="due_date">Due Date</label>
+            <input
+              id="due_date"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
           </div>
 
           {error && <p role="alert">{error}</p>}

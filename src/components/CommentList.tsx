@@ -43,7 +43,7 @@ function CommentList({ comments }: Props) {
                 })}
               </span>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{c.text}</p>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{c.body}</p>
           </div>
         </li>
       ))}

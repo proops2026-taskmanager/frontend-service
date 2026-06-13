@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import TaskListPage from './pages/TaskListPage';
 import CreateTaskPage from './pages/CreateTaskPage';
 import TaskDetailPage from './pages/TaskDetailPage';
+import EditTaskPage from './pages/EditTaskPage';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -39,6 +40,16 @@ function App() {
             <AuthGuard>
               <ProtectedLayout>
                 <CreateTaskPage />
+              </ProtectedLayout>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/tasks/:id/edit"
+          element={
+            <AuthGuard>
+              <ProtectedLayout>
+                <EditTaskPage />
               </ProtectedLayout>
             </AuthGuard>
           }

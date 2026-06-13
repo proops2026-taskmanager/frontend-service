@@ -5,6 +5,7 @@ import { TaskDetail, TaskStatus } from '../types/task';
 import CommentList from '../components/CommentList';
 import CommentForm from '../components/CommentForm';
 import StatusSelector from '../components/StatusSelector';
+import { useUserMap } from '../lib/useUsers';
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
   TODO: 'To Do',
@@ -20,6 +21,7 @@ async function fetchTask(id: string): Promise<TaskDetail> {
 
 function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const userMap = useUserMap();
 
   const { data: task, isLoading, isError } = useQuery({
     queryKey: ['task', id],
@@ -32,6 +34,9 @@ function TaskDetailPage() {
   if (!task) return null;
 
   const statusClass = task.status.toLowerCase().replace('_', '_');
+  const assignee = userMap.get(task.assignee_id);
+  const assigneeLabel = assignee ? assignee.full_name : task.assignee_id;
+  const dueDateLabel = task.due_date ? new Date(task.due_date).toLocaleDateString() : null;
 
   return (
     <div>
@@ -47,9 +52,16 @@ function TaskDetailPage() {
         <div className="task-detail">
           <div className="task-list-header">
             <h2>{task.title}</h2>
-            <span className={`status-badge ${statusClass}`}>
-              {STATUS_LABELS[task.status]}
-            </span>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <span className={`status-badge ${statusClass}`}>
+                {STATUS_LABELS[task.status]}
+              </span>
+              <Link to={`/tasks/${task.id}/edit`}>
+                <button type="button" className="secondary" style={{ padding: '6px 16px', fontSize: '0.875rem' }}>
+                  Edit
+                </button>
+              </Link>
+            </div>
           </div>
 
           {task.description && <p style={{ marginBottom: '20px' }}>{task.description}</p>}
@@ -57,16 +69,16 @@ function TaskDetailPage() {
           <div className="meta">
             <div className="meta-item">
               <span className="meta-label">Assignee</span>
-              <span className="meta-value">{task.assignee_id}</span>
+              <span className="meta-value">{assigneeLabel}</span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Created</span>
               <span className="meta-value">{new Date(task.created_at).toLocaleDateString()}</span>
             </div>
-            {task.due_date && (
+            {dueDateLabel && (
               <div className="meta-item">
                 <span className="meta-label">Due Date</span>
-                <span className="meta-value">{task.due_date}</span>
+                <span className="meta-value">{dueDateLabel}</span>
               </div>
             )}
           </div>

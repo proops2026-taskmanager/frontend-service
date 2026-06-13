@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { clearAuth, getCurrentUser } from '../lib/auth';
+import NotificationBell from './NotificationBell';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ function Navbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
+        <NotificationBell />
         {user && (
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[#0052CC] flex items-center justify-center text-white text-xs font-bold">

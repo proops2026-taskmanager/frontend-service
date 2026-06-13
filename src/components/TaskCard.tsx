@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Task, TaskStatus } from '../types/task';
+import { useUserMap } from '../lib/useUsers';
+import PriorityBadge from './PriorityBadge';
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
   TODO: 'To Do',
@@ -13,8 +15,14 @@ interface Props {
 }
 
 function TaskCard({ task }: Props) {
+  const userMap = useUserMap();
   const statusClass = task.status.toLowerCase().replace('_', '_');
-  
+  const assignee = userMap.get(task.assignee_id);
+  const assigneeLabel = assignee ? assignee.full_name : task.assignee_id;
+  const dueDateLabel = task.due_date
+    ? new Date(task.due_date).toLocaleDateString()
+    : null;
+
   return (
     <div className="task-card">
       <div className="task-card-header">
@@ -29,8 +37,9 @@ function TaskCard({ task }: Props) {
         {task.description && <p>{task.description}</p>}
       </div>
       <div className="task-card-footer">
-        <span>Assignee: {task.assignee_id}</span>
-        {task.due_date && <span>Due: {task.due_date}</span>}
+        <span>Assignee: {assigneeLabel}</span>
+        <PriorityBadge priority={task.priority} />
+        {dueDateLabel && <span>Due: {dueDateLabel}</span>}
       </div>
     </div>
   );
