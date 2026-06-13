@@ -586,7 +586,7 @@ p[role="alert"] {
   animation: fadeIn 0.15s ease-out;
 }
 
-.notification-dropdown-header {
+.notification-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -597,7 +597,7 @@ p[role="alert"] {
   color: var(--dark);
 }
 
-.notification-dropdown-header button {
+.mark-all-read {
   background: none;
   border: none;
   color: var(--primary);
@@ -610,10 +610,28 @@ p[role="alert"] {
   letter-spacing: 0;
 }
 
-.notification-dropdown-header button:hover:not(:disabled) {
+.mark-all-read:hover:not(:disabled) {
   background: var(--light);
   transform: none;
   box-shadow: none;
+}
+
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-body {
+  margin: 0 0 4px 0;
+  font-size: 0.875rem;
+  color: var(--dark);
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 0.7rem;
+  color: var(--gray);
 }
 
 .notification-item {
