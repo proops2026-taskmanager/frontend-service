@@ -19,7 +19,7 @@ function CommentForm({ taskId }: Props) {
     setLoading(true);
 
     try {
-      await api.post(`/tasks/${taskId}/comments`, { text: text.trim() });
+      await api.post(`/tasks/${taskId}/comments`, { body: text.trim() });
       await queryClient.invalidateQueries({ queryKey: ['task', taskId] });
       setText('');
     } catch {

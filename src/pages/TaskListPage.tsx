@@ -3,18 +3,14 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { getCurrentUser, clearAuth } from '../lib/auth';
-import { Task, TaskStatus } from '../types/task';
+import { Task } from '../types/task';
 import TaskCard from '../components/TaskCard';
-import TaskFilterBar from '../components/TaskFilterBar';
-
-interface Filters {
-  status: TaskStatus | '';
-  assignee_id: string;
-}
+import TaskFilterBar, { Filters } from '../components/TaskFilterBar';
 
 async function fetchTasks(filters: Filters): Promise<Task[]> {
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
+  if (filters.priority) params.priority = filters.priority;
   if (filters.assignee_id) params.assignee_id = filters.assignee_id;
 
   const res = await api.get<{ tasks: Task[]; total: number }>('/tasks', { params });
@@ -23,7 +19,7 @@ async function fetchTasks(filters: Filters): Promise<Task[]> {
 
 function TaskListPage() {
   const currentUser = getCurrentUser();
-  const [filters, setFilters] = useState<Filters>({ status: '', assignee_id: '' });
+  const [filters, setFilters] = useState<Filters>({ status: '', priority: '', assignee_id: '' });
 
   const { data: tasks, isLoading, isError } = useQuery({
     queryKey: ['tasks', filters],

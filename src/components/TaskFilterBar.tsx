@@ -1,7 +1,8 @@
-import { TaskStatus } from '../types/task';
+import { TaskStatus, TaskPriority } from '../types/task';
 
-interface Filters {
+export interface Filters {
   status: TaskStatus | '';
+  priority: TaskPriority | '';
   assignee_id: string;
 }
 
@@ -11,21 +12,31 @@ interface Props {
 }
 
 const STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE', 'CANCELLED'];
+const STATUS_LABELS: Record<TaskStatus, string> = {
+  TODO: 'To Do', IN_PROGRESS: 'In Progress', DONE: 'Done', CANCELLED: 'Cancelled',
+};
+const PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 
 function TaskFilterBar({ filters, onChange }: Props) {
   return (
     <div className="filter-bar">
       <select
         value={filters.status}
-        onChange={(e) =>
-          onChange({ ...filters, status: e.target.value as TaskStatus | '' })
-        }
+        onChange={(e) => onChange({ ...filters, status: e.target.value as TaskStatus | '' })}
       >
         <option value="">All statuses</option>
         {STATUSES.map((s) => (
-          <option key={s} value={s}>
-            {s === 'TODO' ? 'To Do' : s === 'IN_PROGRESS' ? 'In Progress' : s}
-          </option>
+          <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+        ))}
+      </select>
+
+      <select
+        value={filters.priority}
+        onChange={(e) => onChange({ ...filters, priority: e.target.value as TaskPriority | '' })}
+      >
+        <option value="">All priorities</option>
+        {PRIORITIES.map((p) => (
+          <option key={p} value={p}>{p.charAt(0) + p.slice(1).toLowerCase()}</option>
         ))}
       </select>
 
